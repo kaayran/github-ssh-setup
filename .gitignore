@@ -1,0 +1,16 @@
+# SSH backups
+*.backup
+*_backup
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
