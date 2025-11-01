@@ -2,6 +2,8 @@
 
 This repository contains a quick guide and automation scripts for setting up SSH keys for GitHub on Windows, Linux, and macOS.
 
+🌐 **Live Demo:** [https://kaayran.github.io/github-ssh-setup/](https://kaayran.github.io/github-ssh-setup/)
+
 ## Quick Start with Scripts
 
 ### Windows (cmd)
