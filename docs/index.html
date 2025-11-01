@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>github-ssh-setup</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;100i;400;400i;500;500i;700;700i&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #0a0a1a;
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 200, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 100, 200, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 70%, rgba(100, 255, 200, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 10% 80%, rgba(255, 200, 100, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 90% 60%, rgba(200, 100, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 60% 20%, rgba(255, 150, 0, 0.12) 0%, transparent 50%);
+            background-size: 200% 200%;
+            animation: holographicMove 20s ease infinite;
+            filter: blur(80px);
+            z-index: -2;
+            opacity: 0.5;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 70% 40%, rgba(0, 150, 255, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 30% 60%, rgba(255, 50, 150, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(150, 255, 150, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 15% 70%, rgba(255, 255, 100, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(200, 100, 255, 0.12) 0%, transparent 40%);
+            background-size: 150% 150%;
+            animation: holographicMove 25s ease infinite reverse;
+            filter: blur(60px);
+            z-index: -2;
+            opacity: 0.4;
+        }
+
+        @keyframes holographicMove {
+            0% {
+                background-position: 0% 0%, 100% 100%, 50% 50%, 20% 80%, 80% 20%, 60% 40%;
+            }
+            25% {
+                background-position: 100% 50%, 0% 0%, 80% 80%, 40% 20%, 20% 60%, 90% 10%;
+            }
+            50% {
+                background-position: 50% 100%, 50% 50%, 20% 20%, 80% 80%, 60% 40%, 10% 90%;
+            }
+            75% {
+                background-position: 100% 0%, 0% 100%, 70% 30%, 30% 70%, 90% 50%, 50% 10%;
+            }
+            100% {
+                background-position: 0% 0%, 100% 100%, 50% 50%, 20% 80%, 80% 20%, 60% 40%;
+            }
+        }
+
+        /* Star dust effect */
+        .star-dust {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.5), transparent),
+                radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 90% 60%, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(1px 1px at 33% 80%, rgba(255, 255, 255, 0.5), transparent),
+                radial-gradient(2px 2px at 10% 20%, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(1px 1px at 70% 90%, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(2px 2px at 40% 40%, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(1px 1px at 25% 60%, rgba(255, 255, 255, 0.5), transparent);
+            background-size: 200% 200%;
+            background-repeat: repeat;
+            animation: starDustMove 30s linear infinite;
+            z-index: -1;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes starDustMove {
+            0% {
+                background-position: 0% 0%, 100% 100%, 50% 50%, 20% 80%, 80% 20%, 60% 40%, 10% 90%, 90% 10%, 40% 60%, 30% 70%;
+            }
+            100% {
+                background-position: 100% 100%, 0% 0%, 50% 50%, 80% 20%, 20% 80%, 40% 60%, 90% 10%, 10% 90%, 60% 40%, 70% 30%;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 20px;
+            text-shadow: 
+                0 0 30px rgba(138, 43, 226, 0.5),
+                0 0 60px rgba(0, 119, 255, 0.3),
+                0 2px 20px rgba(0, 0, 0, 0.5);
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 0%, #e0d5ff 50%, #c8e5ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+        }
+
+        .quick-start {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: 
+                0 8px 32px 0 rgba(31, 38, 135, 0.37),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .quick-start::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.25), rgba(0, 119, 255, 0.25));
+            border-radius: 24px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .quick-start:hover::before {
+            opacity: 0.3;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .section-title::before {
+            content: '';
+            font-size: 2rem;
+        }
+
+        .platform-section {
+            margin-bottom: 50px;
+        }
+
+        .platform-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+            text-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .script-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 32px 0 rgba(31, 38, 135, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .script-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .script-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 12px 40px 0 rgba(31, 38, 135, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.35),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        }
+
+        .script-card:hover::before {
+            left: 100%;
+        }
+
+        .script-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .script-name code {
+            background: rgba(138, 43, 226, 0.2);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.2);
+        }
+
+        .script-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .script-usage {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 
+                0 4px 16px 0 rgba(31, 38, 135, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .script-usage-title {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        .script-usage pre {
+            color: rgba(255, 255, 255, 0.95);
+            font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 2;
+            overflow-x: auto;
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .script-usage code {
+            display: block;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Highlight comments */
+        .script-usage code {
+            position: relative;
+        }
+
+        .script-usage pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid rgba(138, 43, 226, 0.5);
+        }
+
+        /* Style for comment lines (REM or #) */
+        .script-usage pre::before {
+            content: '';
+            display: block;
+        }
+
+        /* Highlight commands - lines that don't start with REM or # */
+        .script-usage code {
+            line-height: 1.8;
+        }
+
+        /* Use regex-like approach via CSS - style command lines */
+        .script-usage pre {
+            counter-reset: line-number;
+        }
+
+        /* Alternative: use JavaScript-friendly classes, but for now use text styling */
+        
+        /* Style comment markers */
+        .script-usage code {
+            font-weight: 400;
+        }
+
+        .script-usage .comment-line {
+            color: rgba(150, 150, 170, 0.8);
+            font-style: italic;
+            opacity: 0.85;
+            font-weight: 400;
+            font-size: 0.95em;
+            padding: 2px 0;
+            margin: 2px 0;
+        }
+
+        .script-usage .command-line {
+            color: rgba(230, 240, 255, 1);
+            font-weight: 500;
+            padding: 8px 12px;
+            margin: 4px 0;
+            font-size: 0.95em;
+            position: relative;
+            padding-right: 40px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            border-left: 2px solid rgba(138, 43, 226, 0.4);
+            padding-left: 12px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .copy-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            flex-shrink: 0;
+        }
+
+        .copy-icon:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            opacity: 1;
+        }
+
+        .copy-icon:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+
+        .copy-icon svg {
+            width: 12px;
+            height: 12px;
+            fill: rgba(255, 255, 255, 0.8);
+        }
+
+        .script-usage .command-line::before {
+            content: '';
+            margin-right: 0;
+        }
+
+        /* Add command indicator only for Linux/Mac commands (those with ./ or starting with chmod) */
+        .script-usage .command-line:not(.windows-command)::before {
+            content: '$ ';
+            color: rgba(138, 43, 226, 0.7);
+            margin-right: 6px;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+            background: rgba(138, 43, 226, 0.2);
+            color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.2);
+        }
+
+        .recommended {
+            background: rgba(0, 119, 255, 0.25);
+            border-color: rgba(0, 119, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 119, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .quick-start {
+                padding: 30px 20px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .script-card {
+                padding: 20px;
+            }
+        }
+
+        .glow-effect {
+            display: none;
+        }
+
+        .glow-1 {
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.4) 0%, rgba(138, 43, 226, 0.1) 40%, transparent 70%);
+            filter: blur(60px);
+        }
+
+        .glow-2 {
+            background: radial-gradient(circle, rgba(0, 119, 255, 0.4) 0%, rgba(0, 119, 255, 0.1) 40%, transparent 70%);
+            filter: blur(60px);
+        }
+
+        .glow-3 {
+            background: radial-gradient(circle, rgba(75, 0, 130, 0.3) 0%, rgba(75, 0, 130, 0.1) 40%, transparent 70%);
+            filter: blur(60px);
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(100px, -50px) scale(1.2);
+            }
+            66% {
+                transform: translate(-50px, 100px) scale(0.8);
+            }
+        }
+
+        .glow-1 {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .glow-2 {
+            top: 60%;
+            right: 10%;
+            animation-delay: 7s;
+        }
+
+        .glow-3 {
+            bottom: 10%;
+            left: 50%;
+            animation-delay: 14s;
+        }
+
+        .platform-switcher {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .platform-button {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 
+                0 4px 16px 0 rgba(31, 38, 135, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .platform-button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 24px 0 rgba(31, 38, 135, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+        }
+
+        .platform-button:active {
+            transform: translateY(1px) scale(0.98);
+            box-shadow: 
+                0 2px 8px 0 rgba(31, 38, 135, 0.2),
+                inset 0 1px 2px rgba(0, 0, 0, 0.2),
+                inset 0 2px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .platform-button.active {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.35);
+            color: rgba(255, 255, 255, 1);
+            box-shadow: 
+                0 8px 32px 0 rgba(31, 38, 135, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        }
+
+        .platform-button.active:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .platform-section {
+            display: none;
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        .platform-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="star-dust"></div>
+    <div class="glow-effect glow-1"></div>
+    <div class="glow-effect glow-2"></div>
+    <div class="glow-effect glow-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>github-ssh-setup</h1>
+            <p class="subtitle">Quick SSH key setup with automated scripts</p>
+        </header>
+
+        <section class="quick-start">
+            <div class="platform-switcher">
+                <button class="platform-button active" data-platform="windows">Windows</button>
+                <button class="platform-button" data-platform="linux-mac">Linux / macOS</button>
+            </div>
+
+            <div class="platform-section windows-section active">
+                <h3 class="platform-title">Windows</h3>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        Setup Wizard
+                        <span class="badge recommended">Recommended</span>
+                    </div>
+                    <p class="script-description">
+                        Complete setup wizard that automates the entire process: key generation, clipboard copying, and SSH config setup.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code>scripts\windows\setup-github-ssh.bat</code></pre>
+                    </div>
+                </div>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        <code>setup-ssh-key.bat</code>
+                    </div>
+                    <p class="script-description">
+                        Generates a new Ed25519 SSH key pair. Creates ~/.ssh directory if it doesn't exist, prompts for account name and email.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code>REM Interactive mode
+scripts\windows\setup-ssh-key.bat
+
+REM With parameters
+scripts\windows\setup-ssh-key.bat personal "user@example.com"</code></pre>
+                    </div>
+                </div>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        <code>copy-public-key.bat</code>
+                    </div>
+                    <p class="script-description">
+                        Copies the public key to clipboard for easy pasting into GitHub. Displays the key content on screen.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code>scripts\windows\copy-public-key.bat personal</code></pre>
+                    </div>
+                </div>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        <code>update-ssh-config.bat</code>
+                    </div>
+                    <p class="script-description">
+                        Adds or updates SSH config entry for GitHub. Creates a backup of existing config before modifications.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code>REM With default host name
+scripts\windows\update-ssh-config.bat personal
+
+REM With custom host name
+scripts\windows\update-ssh-config.bat personal github-work</code></pre>
+                    </div>
+                </div>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        <code>test-ssh-connection.bat</code>
+                    </div>
+                    <p class="script-description">
+                        Tests SSH connection to GitHub using configured hosts. Can test a specific host or all configured hosts.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code>REM Test specific host
+scripts\windows\test-ssh-connection.bat github-personal
+
+REM Test all configured hosts
+scripts\windows\test-ssh-connection.bat</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="platform-section linux-mac-section">
+                <h3 class="platform-title">Linux / macOS</h3>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        Setup Wizard
+                        <span class="badge recommended">Recommended</span>
+                    </div>
+                    <p class="script-description">
+                        Complete setup wizard that automates the entire process: key generation, clipboard copying, and SSH config setup.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code># Make scripts executable (first time only)
+chmod +x scripts/linux-mac/*.sh
+
+# Run setup wizard
+./scripts/linux-mac/setup-github-ssh.sh</code></pre>
+                    </div>
+                </div>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        <code>setup-ssh-key.sh</code>
+                    </div>
+                    <p class="script-description">
+                        Generates a new Ed25519 SSH key pair. Creates ~/.ssh directory with proper permissions (700), sets 600 permissions for private key.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code># Interactive mode
+./scripts/linux-mac/setup-ssh-key.sh
+
+# With parameters
+./scripts/linux-mac/setup-ssh-key.sh personal "user@example.com"</code></pre>
+                    </div>
+                </div>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        <code>copy-public-key.sh</code>
+                    </div>
+                    <p class="script-description">
+                        Copies the public key to clipboard. On Linux uses xclip or xsel, on macOS - pbcopy. Displays the key content on screen.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code>./scripts/linux-mac/copy-public-key.sh personal</code></pre>
+                    </div>
+                </div>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        <code>update-ssh-config.sh</code>
+                    </div>
+                    <p class="script-description">
+                        Adds or updates SSH config entry for GitHub. Creates a backup and sets 600 permissions for config file.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code># With default host name
+./scripts/linux-mac/update-ssh-config.sh personal
+
+# With custom host name
+./scripts/linux-mac/update-ssh-config.sh personal github-work</code></pre>
+                    </div>
+                </div>
+
+                <div class="script-card">
+                    <div class="script-name">
+                        <code>test-ssh-connection.sh</code>
+                    </div>
+                    <p class="script-description">
+                        Tests SSH connection to GitHub using configured hosts. Can test a specific host or all configured hosts automatically.
+                    </p>
+                    <div class="script-usage">
+                        <div class="script-usage-title">Usage:</div>
+                        <pre><code># Test specific host
+./scripts/linux-mac/test-ssh-connection.sh github-personal
+
+# Test all configured hosts
+./scripts/linux-mac/test-ssh-connection.sh</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="script-card" style="margin-top: 40px; background: rgba(0, 119, 255, 0.15); border-color: rgba(0, 119, 255, 0.4); box-shadow: 0 0 30px rgba(0, 119, 255, 0.2);">
+                <div class="script-name">
+                    Important
+                </div>
+                <p class="script-description">
+                    All scripts use only built-in system commands and <strong>require no additional dependencies</strong> (Python, Node.js, etc.). They work immediately after downloading the repository!
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Process code blocks to highlight comments and commands
+        function highlightCodeBlocks() {
+            const codeBlocks = document.querySelectorAll('.script-usage code');
+            
+            codeBlocks.forEach(codeBlock => {
+                const text = codeBlock.textContent;
+                const lines = text.split('\n');
+                
+                // Clear existing content
+                codeBlock.innerHTML = '';
+                
+                lines.forEach((line, index) => {
+                    const lineElement = document.createElement('div');
+                    lineElement.style.display = 'block';
+                    lineElement.style.lineHeight = '1.6';
+                    
+                    if (!line.trim()) {
+                        // Empty line - keep spacing
+                        lineElement.style.height = '0.5em';
+                        codeBlock.appendChild(lineElement);
+                        return;
+                    }
+                    
+                    // Check if line is a comment (REM for Windows, # for Linux/Mac, or blank)
+                    const trimmedLine = line.trim();
+                    if (trimmedLine.startsWith('REM') || 
+                        trimmedLine.startsWith('rem') || 
+                        trimmedLine.startsWith('#') ||
+                        trimmedLine === '') {
+                        lineElement.className = 'comment-line';
+                        lineElement.textContent = line;
+                        codeBlock.appendChild(lineElement);
+                    } else {
+                        // It's a command - split by && or ; or | to separate multiple commands
+                        const commands = line.split(/(?<=&&|;|\|)/g).filter(cmd => cmd.trim());
+                        
+                        commands.forEach((command, cmdIndex) => {
+                            const cmdElement = document.createElement('div');
+                            cmdElement.className = 'command-line';
+                            cmdElement.style.display = 'block';
+                            cmdElement.style.lineHeight = '1.6';
+                            
+                            // Check if it's a Windows command (contains backslashes or starts with scripts\)
+                            if (command.includes('\\') || command.trim().startsWith('scripts')) {
+                                cmdElement.classList.add('windows-command');
+                            }
+                            
+                            // Create text node for the command (remove leading spaces)
+                            const cleanCommand = command.trimStart();
+                            const textNode = document.createTextNode(cleanCommand);
+                            cmdElement.appendChild(textNode);
+                            
+                            // Add copy icon at the end
+                            const copyIcon = document.createElement('div');
+                            copyIcon.className = 'copy-icon';
+                            copyIcon.innerHTML = `
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                            `;
+                            copyIcon.setAttribute('title', 'Copy command');
+                            copyIcon.setAttribute('data-command', cleanCommand);
+                            cmdElement.appendChild(copyIcon);
+                            
+                            codeBlock.appendChild(cmdElement);
+                        });
+                    }
+                });
+            });
+        }
+        
+        // Run when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', highlightCodeBlocks);
+        } else {
+            highlightCodeBlocks();
+        }
+
+        // Copy command functionality
+        function initCopyButtons() {
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.copy-icon')) {
+                    const copyIcon = e.target.closest('.copy-icon');
+                    const command = copyIcon.getAttribute('data-command');
+                    
+                    if (command) {
+                        // Copy to clipboard
+                        navigator.clipboard.writeText(command).then(() => {
+                            // Visual feedback
+                            const originalHTML = copyIcon.innerHTML;
+                            copyIcon.innerHTML = `
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                            `;
+                            copyIcon.style.opacity = '1';
+                            copyIcon.setAttribute('title', 'Copied!');
+                            
+                            setTimeout(() => {
+                                copyIcon.innerHTML = originalHTML;
+                                copyIcon.setAttribute('title', 'Copy command');
+                            }, 2000);
+                        }).catch(err => {
+                            console.error('Failed to copy:', err);
+                            // Fallback for older browsers
+                            const textArea = document.createElement('textarea');
+                            textArea.value = command;
+                            textArea.style.position = 'fixed';
+                            textArea.style.opacity = '0';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            try {
+                                document.execCommand('copy');
+                                copyIcon.setAttribute('title', 'Copied!');
+                                setTimeout(() => {
+                                    copyIcon.setAttribute('title', 'Copy command');
+                                }, 2000);
+                            } catch (err) {
+                                console.error('Fallback copy failed:', err);
+                            }
+                            document.body.removeChild(textArea);
+                        });
+                    }
+                }
+            });
+        }
+
+        // Initialize copy buttons
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCopyButtons);
+        } else {
+            initCopyButtons();
+        }
+
+        // Platform switcher functionality
+        function initPlatformSwitcher() {
+            const buttons = document.querySelectorAll('.platform-button');
+            const windowsSection = document.querySelector('.windows-section');
+            const linuxMacSection = document.querySelector('.linux-mac-section');
+
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const platform = button.getAttribute('data-platform');
+
+                    // Remove active class from all buttons
+                    buttons.forEach(btn => btn.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    button.classList.add('active');
+
+                    // Hide all sections
+                    windowsSection.classList.remove('active');
+                    linuxMacSection.classList.remove('active');
+
+                    // Show selected section
+                    if (platform === 'windows') {
+                        windowsSection.classList.add('active');
+                    } else if (platform === 'linux-mac') {
+                        linuxMacSection.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Initialize platform switcher
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPlatformSwitcher);
+        } else {
+            initPlatformSwitcher();
+        }
+    </script>
+</body>
+</html>
